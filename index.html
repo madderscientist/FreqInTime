@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+
+<script src="./audioInput.js"></script>
+<script src="./freqTable.js"></script>
+<script src="./F0.js"></script>
+<script src="./noPeak.js"></script>
+<script src="./freqCanvas.js"></script>
+
+<body>
+    <div id="freqNum">点击屏幕以开始</div>
+    <div id="container">
+        <canvas id="freqBar" width="0" height="0"></canvas>
+    </div>
+</body>
+
+<script>
+    const c = FreqCanvas.fromCanvas(freqBar);
+    const freqNum = document.getElementById('freqNum');
+    const device = new AudioInput(null, 2048);
+    device.register().then(() => {
+        freqNum.innerText = '--Hz';
+        update();
+    }).catch((err) => {
+        document.write(err);
+    });
+
+    const noPeak = new NoPeak((f) => {
+        c.input(f);
+    }, 4, 1.26, 1.1);
+    function update() {
+        const freq = autoCorrelate(device.getTimeData(), device.audioContext.sampleRate);
+        if (freq > 0) {
+            freqNum.innerText = freq.toFixed(2) + 'Hz';
+            // c.input(freq);   // 有很多尖峰
+            noPeak.input(freq);
+        }
+        requestAnimationFrame(update);
+    }
+</script>
+
+</html>

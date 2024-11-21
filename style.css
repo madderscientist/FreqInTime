@@ -1,0 +1,29 @@
+:root {
+    user-select:none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#freqNum {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: white;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    z-index: 100;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* 隐藏滚动条 */
+    border: 1px solid black;
+    position: relative;
+    z-index: 0;
+}

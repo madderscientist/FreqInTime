@@ -10,7 +10,7 @@ class NoPeak {
         this.threadRate = threadRate;
         this.captureRate = captureRate;
         this.dataOutfn = dataOutfn;
-        this.buffer = new Float16Array(trustLen);
+        this.buffer = new Float32Array(trustLen);
         this.pointer = 0;
         this.stable = 0;
     }

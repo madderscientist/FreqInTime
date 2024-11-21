@@ -155,7 +155,7 @@ class FreqCanvas extends HTMLCanvasElement {
 }
 
 // 一个只插入的循环数组
-class LatestArray extends Float16Array {
+class LatestArray extends Float32Array {
     constructor(capacity) {
         super(capacity + 1);    // 留空一个用作判断是否满
         this.head = 0;

@@ -4,7 +4,13 @@
 */
 class FreqCanvas extends HTMLCanvasElement {
     static noteName = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    init(step = 4, gridHeight = 30, A4 = 442) {
+    /**
+     * 初始化频率画布
+     * @param {Number} step 步长
+     * @param {Number} gridHeight 格子高度
+     * @param {Number} A4 A4频率
+     */
+    init(step, gridHeight, A4) {
         this.step = step;
         this.gridHeight = gridHeight;
         this.ctx = this.getContext('2d');
@@ -15,9 +21,9 @@ class FreqCanvas extends HTMLCanvasElement {
         this.stableFreq = this.freqTable.A4;
         this.Ydraggable();
     }
-    static fromCanvas(canvas, step = 4, gridHeight = 30) {
+    static fromCanvas(canvas, step = 4, gridHeight = 30, A4 = 442) {
         Object.setPrototypeOf(canvas, FreqCanvas.prototype);
-        canvas.init(step, gridHeight);
+        canvas.init(step, gridHeight, A4);
         canvas.viewFollow(canvas.stableFreq);
         return canvas;
     }
@@ -144,7 +150,7 @@ class FreqCanvas extends HTMLCanvasElement {
         ctx.strokeStyle = 'red';
         ctx.lineWidth = 2;
         let x = 0;
-        ctx.moveTo(x, this.f2logHeight(this.freqs.earliest()));
+        ctx.moveTo(x, this.height - this.f2logHeight(this.freqs.earliest()));
         for(const f of this.freqs) {
             const h = this.f2logHeight(f);
             x += this.step;

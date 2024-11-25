@@ -1,10 +1,10 @@
 // 自相关算基频
-function autoCorrelate(buf, sampleRate) {
+function autoCorrelate(buf, sampleRate, sensitivity = 0.01) {
     // 计算能量 能量太小就不处理
     let rms = 0;
     for (const val of buf) rms += val * val;
     rms = Math.sqrt(rms / buf.length);
-    if (rms < 0.01) return -1;
+    if (rms < sensitivity) return -1;
 
     // 前后静音剪裁
     let begin = 0;

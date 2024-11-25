@@ -1,29 +1,95 @@
 :root {
+    --lineH: 2em;
+}
+
+* {
+    margin: 0;
+    padding: 0;
     user-select:none;
 }
 
 html, body {
-    margin: 0;
-    padding: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+    font-size: 20px;
 }
 
-#freqNum {
+.expander {
     position: absolute;
     left: 0;
     top: 0;
-    color: white;
-    font-size: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 5px;
     z-index: 100;
+    overflow: hidden;
+
+    transition: all 0.4s ease;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: var(--lineH);
+    width: 5.5rem;
+    padding-left: 0.3rem;
+    border-bottom-right-radius: 1em;
+}
+
+.expand {
+    width: 40%;
+    height: 100%;
+}
+
+@media (max-width: 750px) {
+    .expand {
+        width: 100%;
+    }
+}
+
+.scrollDiv {
+    width: 100%;
+    height: calc(100% - var(--lineH));
+    overflow: auto;
+    transition: all 0.4s ease;
+    opacity: 0;
+    font-size: 16px;
+}
+
+.expand .scrollDiv {
+    opacity: 1;
+}
+
+.scrollDiv table {
+    width: 100%;
+    line-height: 1.8;
+
+    input[type="range"] {
+        width: 90%;
+    }
+
+    input[type="number"] {
+        width: 90%;
+        padding-left: 0.3rem;
+        font: 1em sans-serif;
+    }
+
+    td:first-child {
+        white-space: nowrap;
+        width: 1px;
+        font-weight: bold;
+    }
+}
+
+#freqNum {
+    color: white;
+    line-height: var(--lineH);
+    font-family: monospace;
 }
 
 #container {
     width: 100vw;
     height: 100vh;
     overflow: hidden; /* 隐藏滚动条 */
-    border: 1px solid black;
     position: relative;
     z-index: 0;
+}
+
+/* 如果用了noteDigger的myRange.css */
+.myrange {
+    width: 95%;
 }

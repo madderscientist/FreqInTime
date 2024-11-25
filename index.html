@@ -4,30 +4,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="./audioInput.js"></script>
+    <script src="./freqTable.js"></script>
+    <script src="./F0.js"></script>
+    <script src="./noPeak.js"></script>
+    <script src="./freqCanvas.js"></script>
     <link rel="stylesheet" href="./style.css">
+
+    <!-- 以下两个文件不一定需要 -->
+    <link rel="stylesheet" href="https://madderscientist.github.io/noteDigger/style/myRange.css">
+    <script src="https://madderscientist.github.io/noteDigger/myRange.js" onload="rangeInit()" defer></script>
+
     <title>频率随时间变化曲线</title>
 </head>
 
-<script src="./audioInput.js"></script>
-<script src="./freqTable.js"></script>
-<script src="./F0.js"></script>
-<script src="./noPeak.js"></script>
-<script src="./freqCanvas.js"></script>
-
 <body>
-    <div id="freqNum">点击屏幕以开始</div>
+    <div class="expander" style="width: 8rem;">
+        <div id="freqNum">点击屏幕以开始</div>
+        <div class="scrollDiv">
+            <table>
+                <tr>
+                    <td>抗干扰：</td>
+                    <td><input type="range" id="sensitivityRange" min="0.002" max="0.02" step="0.002" value="0.01"></td>
+                </tr>
+                <tr>
+                    <td>步长：</td>
+                    <td><input type="range" id="stepRange" min="1" max="16" step="1" value="4"></td>
+                </tr>
+                <tr>
+                    <td>高度：</td>
+                    <td><input type="range" id="heightRange" min="10" max="100" step="1" value="30"></td>
+                </tr>
+                <tr>
+                    <td>A4频率：</td>
+                    <td><input type="number" id="A4Setting" min="110" value="442"></td>
+                </tr>
+            </table>
+            <small>
+                *滑动条滚动时应用修改<br>
+                *输入框焦点取消时应用修改<br>
+                *抗干扰越左越灵敏，但噪音也会更多<br>
+                *点击右侧数字恢复初值<br>
+                *点击顶部或外部收起本界面
+            </small>
+        </div>
+    </div>
     <div id="container">
         <canvas id="freqBar" width="0" height="0"></canvas>
     </div>
 </body>
 
 <script>
-    const c = FreqCanvas.fromCanvas(freqBar);
+    function rangeInit() {
+        if (typeof myRange !== 'undefined') {
+            hideLableRange.new(sensitivityRange).reset();
+            LableRange.new(stepRange).reset();
+            LableRange.new(heightRange).reset();
+        }
+    }
+    var sensitivity = Number(sensitivityRange.value);
+    sensitivityRange.addEventListener('input', () => {
+        sensitivity = Number(sensitivityRange.value);
+    });
+    stepRange.addEventListener('input', () => {
+        c.setStep(Number(stepRange.value));
+    });
+    heightRange.addEventListener('input', () => {
+        c.setGridHeight(Number(heightRange.value));
+    });
+    A4Setting.addEventListener('blur', () => {
+        c.freqTable.A4 = Number(A4Setting.value);
+    });
+
+    const expander = document.querySelector('.expander');
+    const c = FreqCanvas.fromCanvas(
+        freqBar,
+        Number(stepRange.value),
+        Number(heightRange.value),
+        Number(A4Setting.value)
+    );
     const freqNum = document.getElementById('freqNum');
     const device = new AudioInput(null, 2048);
     device.register().then(() => {
-        freqNum.innerText = '--Hz';
+        freqNum.innerText = '----.--Hz';
         update();
+        // UI相关
+        expander.removeAttribute('style');  // 恢复原宽
+        freqNum.onclick = () => {
+            expander.classList.toggle('expand');
+        };
+        c.addEventListener('click', () => {
+            expander.classList.remove('expand');
+        })
     }).catch((err) => {
         document.write(err);
     });
@@ -36,9 +105,13 @@
         c.input(f);
     }, 4, 1.26, 1.1);
     function update() {
-        const freq = autoCorrelate(device.getTimeData(), device.audioContext.sampleRate);
+        const freq = autoCorrelate(
+            device.getTimeData(),
+            device.audioContext.sampleRate,
+            sensitivity
+        );
         if (freq > 0) {
-            freqNum.innerText = freq.toFixed(2) + 'Hz';
+            freqNum.innerText = freq.toFixed(2).padStart(7, '\u00A0') + 'Hz';
             // c.input(freq);   // 有很多尖峰
             noPeak.input(freq);
         }
